@@ -134,6 +134,7 @@ link), recalled, or hypothesis:
 | [`a1-designs.md`](docs/a1-designs.md) | Mind architecture candidates, their review, and the pre-registered race |
 | [`ava-blueprint.md`](docs/ava-blueprint.md) | The camera-and-voice Ava: organs, opponents, speed targets, what she may claim to perceive |
 | [`agi-asi-survey.md`](docs/agi-asi-survey.md) | What AGI and ASI mean, where AI stands against humans, the AGI scorecard Ava is measured on, and the honesty rules designed in from the start |
+| [`agi-paths-census.md`](docs/agi-paths-census.md) | Who is building a general mind outside the Transformer and what they showed; small systems on ARC; learning from raw experience; the brain against this laptop; what the plan gains from it |
 
 ## License
 
