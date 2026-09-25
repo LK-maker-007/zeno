@@ -165,7 +165,7 @@ def run(seed: int, entrants: list[str], reference: str | None, out_dir: Path, ar
     path.write_text(
         json.dumps(
             {
-                "command": " ".join(sys.argv),
+                "command": " ".join(["python -m scoreboard.run", *sys.argv[1:]]),
                 "seed": seed,
                 "world_digest": world.digest(),
                 "python": platform.python_version(),
