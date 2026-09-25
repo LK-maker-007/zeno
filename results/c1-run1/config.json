@@ -1,0 +1,27 @@
+{
+  "model": {
+    "ctx": 512,
+    "d": 256,
+    "layers": 6,
+    "heads": 8,
+    "dropout": 0.0
+  },
+  "args": {
+    "steps": 6000,
+    "batch": 64,
+    "lr": 0.001,
+    "ctx": 512,
+    "d": 256,
+    "layers": 6,
+    "heads": 8,
+    "train_worlds": 200,
+    "per_world": 1000,
+    "val_worlds": 5,
+    "val_per_world": 100,
+    "eval_every": 1000,
+    "overfit": 0,
+    "threads": 2,
+    "seed": 0,
+    "out": "/kaggle/working/childmind"
+  }
+}
