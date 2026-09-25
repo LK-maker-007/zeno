@@ -45,3 +45,5 @@ jobs:
           done
       - name: the memory race runs end to end and its controls pass
         run: python -m scoreboard.run --seed 0 --out /tmp/results
+      - name: the reading race runs end to end
+        run: python -m scoreboard.read_race --n 10 --out /tmp/results
