@@ -9,7 +9,7 @@ Date: 2026-09-26. Companion to `foundational-survey.md`, `agi-asi-survey.md` and
 
 Tags:
 - **[V]** measured on this laptop, or read directly from code, a checkpoint, data or a leaderboard, for this document.
-- **[C]** a primary source says it; the link is given. Every [C] number was read in its source twice: once in the census and again in a separate verification pass.
+- **[C]** a primary source says it; the link is given. Every [C] number in sections 3 to 6 was read in its source twice: once in the census and again in a separate verification pass. The section 9 checks were read once.
 - **[S]** press, a vendor page or a search snippet only.
 - **[H]** hypothesis, or my arithmetic with the inputs shown.
 - **[R]** from memory, unchecked.
@@ -147,7 +147,7 @@ Load average 0.35 before the run. Script in Appendix A.1. numpy 2.5.1 with OpenB
 | 4 | 386.1 GFLOP/s (runs 264.5 to 386.1) | 72.1 GFLOP/s | 25.6 GFLOP/s |
 | 8 | 359.6 GFLOP/s | 73.2 GFLOP/s | 18.3 GFLOP/s |
 
-A d=1024 layer (4 MB) fits in the 8 MB cache; a d=2048 layer (16.8 MB) does not.
+A d=1024 layer (4 MB) fits in the "8M Cache" [C, [Intel ARK](https://www.intel.com/content/www/us/en/products/sku/196656/intel-core-i511300h-processor-8m-cache-up-to-4-40-ghz-with-ipu/specifications.html)]; a d=2048 layer (16.8 MB) does not.
 
 ### 6.2 Brain numbers
 
@@ -228,7 +228,7 @@ Every line is arithmetic on the numbers above. The laptop figure is 386 GFLOP/s,
 ## 7. Matrix
 
 ### What every system that worked did
-1. **Adapted to the task at test time.**
+1. **Adapted to the task at test time.** This holds for every neural ARC system that scored. The exception is icecuber, which reaches 17% on ARC-1 by search alone.
    - ARC Prize 2024: "there does not exist any static inference-style transduction solution that scores above 11%" [C, [arXiv 2412.04604](https://arxiv.org/abs/2412.04604)].
    - TRM with a blank or random puzzle ID scores 0.00% [C, [arXiv 2512.11847](https://arxiv.org/abs/2512.11847)].
    - HRM trained on the evaluation tasks alone still reached 31% [C, ARC Prize].
@@ -286,7 +286,7 @@ The census does not move the plan off its road. The bet in `plan.md` §4 fits th
 - an own mind raced against a fair baseline is the step that caught HRM.
 
 Additions supported by the matrix:
-1. **Test-time adaptation and iterative refinement for A1's successors.** A1 reads memory twice but does not adapt to the task. Findings 1 and 2 are the two ingredients every scoring ARC system shares.
+1. **Test-time adaptation and iterative refinement for A1's successors.** A1 reads memory twice but does not adapt to the task. Findings 1 and 2 are the two ingredients every neural ARC system that scored shares.
 2. **Design D's records as the replay source for learning on the job.** Finding 4. M2 already lists replay as an opponent; it should also be a candidate mechanism.
 3. **Replace "no memory constraint" with a measured budget:**
    - bytes stored per day;
@@ -303,7 +303,7 @@ Additions supported by the matrix:
 1. **The A1 vs C1 race** pre-registered in `a1-designs.md`. Nothing here changes its pass or kill criteria.
 2. **New, V1: one-pass vision on this CPU.**
    - Train a small self-supervised encoder on a few hours of public egocentric video, once in a single pass and once for several epochs on the same frames, and compare their linear probes. Five seeds.
-   - **Kill, proposed before running:** if the one-pass probe is below 0.8 of the multi-epoch probe, with the 95% CI below 0.8, one-pass perception learning is dropped. Ava then learns perception by replaying stored records.
+   - **Kill, proposed before running:** if the upper bound of the 95% CI, over 5 seeds, of the ratio (one-pass probe / multi-epoch probe) is below 0.8, one-pass perception learning is dropped. Ava then learns perception by replaying stored records.
    - This tests the "learns everything it sees" requirement directly. The census found no one-pass result at human scale.
 
 ---
