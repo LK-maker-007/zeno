@@ -119,6 +119,7 @@ link), recalled, or hypothesis:
 | [`memory-designs.md`](docs/memory-designs.md) | Memory design candidates and their review |
 | [`a1-designs.md`](docs/a1-designs.md) | Mind architecture candidates, their review, and the pre-registered race |
 | [`ava-blueprint.md`](docs/ava-blueprint.md) | The camera-and-voice Ava: organs, opponents, speed targets, what she may claim to perceive |
+| [`agi-asi-survey.md`](docs/agi-asi-survey.md) | What AGI and ASI mean, where AI stands against humans, the AGI scorecard Ava is measured on, and the honesty rules designed in from the start |
 
 ## License
 
