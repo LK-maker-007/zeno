@@ -28,6 +28,37 @@ pip install -e .[dev]
 python -m scoreboard.run --seed 0
 ```
 
+## Reading benchmark
+
+`scoreboard/reading.py` tests a mind on reading, not recall: a handful of facts and a question, answered from
+the facts or with "unknown". Nine categories:
+
+| Category | What it checks |
+|---|---|
+| `simple` | Plain lookup, or "unknown" when the fact is absent |
+| `near_miss` | The person has a fact of the same kind ("cat"), the question asks for another ("dog") |
+| `same_name` | Another person sharing a first or last name has the asked-for fact |
+| `update` | A later fact ("now lives in Pune") replaces an earlier one |
+| `negation` | "has no dog" means the answer is "unknown" |
+| `two_hop` | "Where does Priya's sister live?" needs two facts |
+| `heldout_question` | Question wordings never used in training |
+| `heldout_fact` | Fact wordings never used in training |
+| `heldout_both` | Both at once |
+
+Each relation has 6 fact wordings and 8 question wordings. Two fact wordings and three question wordings per
+relation are held out, so the held-out categories test meaning, not memorised phrasing.
+
+Two regex readers set the floor. One knows only the training wordings: it scores 0.000 on held-out answerable
+questions, which is what a template-matcher earns there. The other knows every wording, and the tests require
+it to agree with every gold label, which is how the labels are checked.
+
+Accuracy on "unknown" questions alone rewards a reader that cannot parse anything; read it together with
+answerable accuracy.
+
+```bash
+python -m scoreboard.read_race --n 100
+```
+
 ## License
 
 MIT
