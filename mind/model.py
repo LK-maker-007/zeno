@@ -19,6 +19,11 @@ class Config:
     hops: int = 2
 
 
+def delta_write(m: torch.Tensor, k: torch.Tensor, v: torch.Tensor, beta: torch.Tensor) -> torch.Tensor:
+    # Store only what the memory does not already predict for this key: m += beta (v - m k) k^T.
+    return m + beta[:, None, None] * torch.einsum("bi,bj->bij", v - torch.einsum("bij,bj->bi", m, k), k)
+
+
 class Encoder(nn.Module):
     def __init__(self, c: Config):
         super().__init__()
@@ -68,9 +73,8 @@ class FastWeightReader(nn.Module):
         with torch.autocast(facts.device.type, enabled=False):
             # One delta-rule write per fact, in order: a later fact with the same key overwrites an earlier one.
             for j in range(n):
-                kj, bj = k[:, j], beta[:, j, None, None]
-                m = m + bj * torch.einsum("bi,bj->bij", v[:, j] - torch.einsum("bij,bj->bi", m, kj), kj)
-                pk = pk + bj * torch.einsum("bi,bj->bij", kj - torch.einsum("bij,bj->bi", pk, kj), kj)
+                m = delta_write(m, k[:, j], v[:, j], beta[:, j])
+                pk = delta_write(pk, k[:, j], k[:, j], beta[:, j])
         return {"M": m, "P": pk, "v": v, "h": h, "fact_mask": fact_mask, "byte_mask": facts != 0}
 
     def read(self, mem: dict[str, torch.Tensor], question: torch.Tensor) -> dict[str, torch.Tensor]:

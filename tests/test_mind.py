@@ -7,7 +7,7 @@ torch = pytest.importorskip("torch")
 from childmind.model import ChildMind  # noqa: E402
 from childmind.model import Config as C1Config  # noqa: E402
 from mind.data import collate  # noqa: E402
-from mind.model import Config, FastWeightReader, decode, loss_fn  # noqa: E402
+from mind.model import Config, FastWeightReader, decode, delta_write, loss_fn  # noqa: E402
 from scoreboard.reading import CATEGORIES, UNKNOWN, Example, build  # noqa: E402
 
 
@@ -40,3 +40,16 @@ def test_forward_and_backward_stay_finite_with_an_empty_context():
     for text, conf in decode(out, b["facts"]):
         assert isinstance(text, str)
         assert 0.0 <= conf <= 1.0
+
+
+def test_a_later_write_with_the_same_key_overwrites_the_earlier_value():
+    k = torch.nn.functional.normalize(torch.tensor([[1.0, 2.0, 0.0, 0.0]]), dim=-1)
+    other = torch.tensor([[0.0, 0.0, 1.0, 0.0]])
+    v1, v2 = torch.tensor([[1.0, 0.0, 0.0, 0.0]]), torch.tensor([[0.0, 5.0, 0.0, 0.0]])
+    full = torch.ones(1)
+    m = delta_write(delta_write(torch.zeros(1, 4, 4), k, v1, full), k, v2, full)
+    assert torch.allclose(torch.einsum("bij,bj->bi", m, k), v2, atol=1e-6)
+    assert torch.allclose(torch.einsum("bij,bj->bi", m, other), torch.zeros(1, 4), atol=1e-6)
+    p = delta_write(delta_write(torch.zeros(1, 4, 4), k, k, full), k, k, full)
+    assert torch.allclose(torch.einsum("bij,bj->bi", p, k), k, atol=1e-6)
+    assert torch.allclose(torch.einsum("bij,bj->bi", p, other), torch.zeros(1, 4), atol=1e-6)
