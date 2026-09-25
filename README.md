@@ -107,6 +107,20 @@ been trained yet.
 python -m mind.train
 ```
 
+## Arena
+
+`arena/` plays an agent through the 25 public ARC-AGI-3 games offline and scores it exactly as ARC Prize does:
+per completed level `min(1.15, (human actions / agent actions)^2)`, weighted by level number, capped by the
+levels completed, with a budget of five times the human action count per level. Twelve games are held out, frozen
+before any agent existed, and are scored once per frozen agent version.
+
+```bash
+pip install -e .[arc]      # Python 3.12; downloads the public games on first run
+python -m arena.run --agent random --split practice --seed 0
+```
+
+The random floor scores 0.02%, 0.00% and 0.42% on the practice games for seeds 0 to 2.
+
 ## Research notes
 
 `docs/` holds the reasoning behind every part, with each claim tagged as measured, cited (with a quote and a
