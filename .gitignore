@@ -1,0 +1,18 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ruff_cache/
+.pytest_cache/
+*.egg-info/
+
+# training runs and checkpoints stay local or on Kaggle
+runs/
+*.pt
+
+# credentials, never commit
+.env
+kaggle.json
+access_token*
+secrets*.json
+*.token
