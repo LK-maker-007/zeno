@@ -1,0 +1,17 @@
+{
+  "id": "singarajb/ava-c1-childmind",
+  "title": "ava-c1-childmind",
+  "code_file": "run_c1.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": true,
+  "enable_gpu": true,
+  "enable_tpu": false,
+  "enable_internet": false,
+  "keywords": [],
+  "dataset_sources": ["singarajb/ava-childmind-code"],
+  "kernel_sources": [],
+  "competition_sources": [],
+  "model_sources": [],
+  "machine_shape": "NvidiaTeslaT4"
+}
