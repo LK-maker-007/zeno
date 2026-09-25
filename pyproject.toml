@@ -20,7 +20,7 @@ dev = ["pytest>=8", "ruff==0.16.9"]
 Repository = "https://github.com/LK-maker-007/zeno"
 
 [tool.setuptools]
-packages = ["scoreboard", "childmind"]
+packages = ["scoreboard", "childmind", "mind"]
 
 [tool.ruff]
 line-length = 119
