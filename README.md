@@ -107,6 +107,19 @@ been trained yet.
 python -m mind.train
 ```
 
+## Research notes
+
+`docs/` holds the reasoning behind every part, with each claim tagged as measured, cited (with a quote and a
+link), recalled, or hypothesis:
+
+| Document | Contents |
+|---|---|
+| [`foundational-survey.md`](docs/foundational-survey.md) | Capabilities a general mind needs; memory, brain-inspired, efficient and robot architectures; hallucination and abstention; what the evidence rules out |
+| [`plan.md`](docs/plan.md) | Goal, rules, the ledger of borrowed and owned parts, experiments with pre-registered kill criteria, status |
+| [`memory-designs.md`](docs/memory-designs.md) | Memory design candidates and their review |
+| [`a1-designs.md`](docs/a1-designs.md) | Mind architecture candidates, their review, and the pre-registered race |
+| [`ava-blueprint.md`](docs/ava-blueprint.md) | The camera-and-voice Ava: organs, opponents, speed targets, what she may claim to perceive |
+
 ## License
 
 MIT
