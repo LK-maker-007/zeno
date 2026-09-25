@@ -1,0 +1,38 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "zeno"
+version = "0.1.0"
+description = "Ava Lovelace Zeno: a small, honest, memory-centred mind that runs on a laptop CPU"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Singaraj B", email = "singaraj.yali@gmail.com" }]
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.26", "tqdm>=4.66"]
+
+[project.optional-dependencies]
+model = ["torch>=2.2"]
+dev = ["pytest>=8", "ruff==0.16.9"]
+
+[project.urls]
+Repository = "https://github.com/LK-maker-007/zeno"
+
+[tool.setuptools]
+packages = ["scoreboard"]
+
+[tool.ruff]
+line-length = 119
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "SIM", "C4", "RUF", "NPY", "PERF"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["scoreboard", "childmind", "mind"]
+required-imports = ["from __future__ import annotations"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

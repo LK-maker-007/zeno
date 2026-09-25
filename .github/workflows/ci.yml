@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install ruff==0.16.9
+      - run: ruff check .
+      - run: ruff format --check .
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.12"]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+      - run: pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: pip install -e .[dev,model]
+      - run: pytest
+      - name: smoke-import every entry point
+        run: |
+          for f in scoreboard/run.py scoreboard/read_race.py childmind/train.py mind/train.py; do
+            [ -f "$f" ] || continue
+            python -m "$(echo "${f%.py}" | tr / .)" --help > /dev/null
+          done
+      - name: the memory race runs end to end and its controls pass
+        run: python -m scoreboard.run --seed 0 --out /tmp/results
