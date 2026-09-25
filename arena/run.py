@@ -80,6 +80,11 @@ def play(arc: Arcade, game: Game, agent: Agent) -> dict:
             stop = "engine returned no frame"
             print(f"  warning: {game.title} stopped, {stop}", flush=True)
             break
+        if nxt.levels_completed < len(done_levels):
+            # Level accounting assumes RESET restarts only the current level; stop rather than mis-score.
+            stop = "levels completed went down"
+            print(f"  warning: {game.title} stopped, {stop}", flush=True)
+            break
         if nxt.levels_completed > len(done_levels):
             done_levels.append(level_actions)
             level_actions = 0
