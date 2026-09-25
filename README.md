@@ -59,6 +59,27 @@ answerable accuracy.
 python -m scoreboard.read_race --n 100
 ```
 
+## C1: the baseline mind
+
+`childmind/` is the first mind and the opponent every later one must beat at equal size: a 4.9M-parameter
+byte-level Transformer (d 256, 6 layers, 8 heads, 512-byte context), written and trained from scratch. It is a
+known architecture on purpose. A new architecture can only be shown better against a fair, working baseline.
+
+It learns to read, not to memorise: every training example is a few facts from a world it will never be
+tested on, a question, and the answer or "unknown", with the same person's other facts as distractors.
+
+```bash
+pip install -e .[dev,model]
+python -m childmind.train --task reading   # scoreboard v2 data; --task v1 reproduces run 1
+```
+
+Run 1 (v1 data, Kaggle T4, seed 0, 6,000 steps) failed its gate of 0.95: answer accuracy 0.906 and "unknown"
+accuracy 0.915 on unseen worlds, 0.276 on held-out question wording. Most errors answered from another
+person's fact of the same kind. That result is also why the reading benchmark exists: the v1 task was
+solvable by template matching, so the gate measured parsing, not reading.
+
+`kaggle/c1/` holds the Kaggle kernel that ran it.
+
 ## License
 
 MIT
