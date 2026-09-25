@@ -69,18 +69,19 @@ def score(reader: Reader, data: list[Example]) -> dict:
 
 
 def report(results: list[dict]) -> None:
-    print(f"\naccuracy by category (answerable EM / unknown accuracy in brackets)\n{'category':<18}", end="")
+    print(f"\naccuracy by category (answerable EM / unknown accuracy in brackets)\n{'category':<18}{'n':>6}", end="")
     for r in results:
         print(f"{r['name'][:30]:>34}", end="")
     print()
     for c in [*CATEGORIES, "ALL"]:
-        print(f"{c:<18}", end="")
+        # Categories that fall back to `simple` come out smaller than requested, so show their size.
+        print(f"{c:<18}{results[0]['categories'][c]['n']:>6}", end="")
         for r in results:
             m = r["categories"][c]
             print(f"{m['acc']:>10.3f} ({m['em_answerable']:.3f} / {m['acc_unknown']:.3f})".rjust(34), end="")
         print()
-    print(f"{'AUROC (ALL)':<18}" + "".join(f"{r['categories']['ALL']['auroc']:>34.3f}" for r in results))
-    print(f"{'ms per read':<18}" + "".join(f"{r['ms_per_read']:>34.2f}" for r in results), flush=True)
+    print(f"{'AUROC (ALL)':<24}" + "".join(f"{r['categories']['ALL']['auroc']:>34.3f}" for r in results))
+    print(f"{'ms per read':<24}" + "".join(f"{r['ms_per_read']:>34.2f}" for r in results), flush=True)
 
 
 def run(a: argparse.Namespace) -> Path:
