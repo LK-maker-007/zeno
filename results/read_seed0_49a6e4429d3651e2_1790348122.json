@@ -1,0 +1,236 @@
+{
+  "command": "python -m scoreboard.read_race --n 10 --childmind runs/c1_kaggle_v1/childmind/last.pt",
+  "seed": 0,
+  "digest": "49a6e4429d3651e2",
+  "python": "3.12.3",
+  "results": [
+    {
+      "name": "floor-regex-train-templates",
+      "ms_per_read": 0.05105575554706673,
+      "categories": {
+        "simple": {
+          "n": 65,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "near_miss": {
+          "n": 49,
+          "acc": 1.0,
+          "em_answerable": NaN,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "same_name": {
+          "n": 50,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "update": {
+          "n": 50,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": NaN,
+          "auroc": NaN
+        },
+        "negation": {
+          "n": 50,
+          "acc": 1.0,
+          "em_answerable": NaN,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "two_hop": {
+          "n": 36,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "heldout_question": {
+          "n": 50,
+          "acc": 0.54,
+          "em_answerable": 0.0,
+          "acc_unknown": 1.0,
+          "auroc": 0.5
+        },
+        "heldout_fact": {
+          "n": 50,
+          "acc": 0.52,
+          "em_answerable": 0.0,
+          "acc_unknown": 1.0,
+          "auroc": 0.5
+        },
+        "heldout_both": {
+          "n": 50,
+          "acc": 0.58,
+          "em_answerable": 0.0,
+          "acc_unknown": 1.0,
+          "auroc": 0.5
+        },
+        "ALL": {
+          "n": 450,
+          "acc": 0.8488888888888889,
+          "em_answerable": 0.6179775280898876,
+          "acc_unknown": 1.0,
+          "auroc": 0.643979057591623
+        }
+      }
+    },
+    {
+      "name": "floor-regex-all-templates",
+      "ms_per_read": 0.06267121777960306,
+      "categories": {
+        "simple": {
+          "n": 65,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "near_miss": {
+          "n": 49,
+          "acc": 1.0,
+          "em_answerable": NaN,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "same_name": {
+          "n": 50,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "update": {
+          "n": 50,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": NaN,
+          "auroc": NaN
+        },
+        "negation": {
+          "n": 50,
+          "acc": 1.0,
+          "em_answerable": NaN,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "two_hop": {
+          "n": 36,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "heldout_question": {
+          "n": 50,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "heldout_fact": {
+          "n": 50,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "heldout_both": {
+          "n": 50,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "ALL": {
+          "n": 450,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        }
+      }
+    },
+    {
+      "name": "C1-transformer (c1_kaggle_v1)",
+      "ms_per_read": 172.509251846657,
+      "categories": {
+        "simple": {
+          "n": 65,
+          "acc": 0.7538461538461538,
+          "em_answerable": 0.5428571428571428,
+          "acc_unknown": 1.0,
+          "auroc": 0.4528061224489796
+        },
+        "near_miss": {
+          "n": 49,
+          "acc": 0.7959183673469388,
+          "em_answerable": NaN,
+          "acc_unknown": 0.7959183673469388,
+          "auroc": 0.0
+        },
+        "same_name": {
+          "n": 50,
+          "acc": 0.44,
+          "em_answerable": 0.21428571428571427,
+          "acc_unknown": 0.5277777777777778,
+          "auroc": 0.1314935064935065
+        },
+        "update": {
+          "n": 50,
+          "acc": 0.2,
+          "em_answerable": 0.2,
+          "acc_unknown": NaN,
+          "auroc": 0.5725
+        },
+        "negation": {
+          "n": 50,
+          "acc": 0.94,
+          "em_answerable": NaN,
+          "acc_unknown": 0.94,
+          "auroc": 0.0
+        },
+        "two_hop": {
+          "n": 36,
+          "acc": 0.25,
+          "em_answerable": 0.18181818181818182,
+          "acc_unknown": 0.28,
+          "auroc": 0.2962962962962963
+        },
+        "heldout_question": {
+          "n": 50,
+          "acc": 0.4,
+          "em_answerable": 0.13043478260869565,
+          "acc_unknown": 0.6296296296296297,
+          "auroc": 0.27
+        },
+        "heldout_fact": {
+          "n": 50,
+          "acc": 0.54,
+          "em_answerable": 0.125,
+          "acc_unknown": 0.9230769230769231,
+          "auroc": 0.5072463768115942
+        },
+        "heldout_both": {
+          "n": 50,
+          "acc": 0.36,
+          "em_answerable": 0.047619047619047616,
+          "acc_unknown": 0.5862068965517241,
+          "auroc": 0.3940972222222222
+        },
+        "ALL": {
+          "n": 450,
+          "acc": 0.5355555555555556,
+          "em_answerable": 0.2303370786516854,
+          "acc_unknown": 0.7352941176470589,
+          "auroc": 0.2740177490122893
+        }
+      }
+    }
+  ]
+}

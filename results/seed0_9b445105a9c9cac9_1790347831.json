@@ -1,0 +1,148 @@
+{
+  "command": "python -m scoreboard.run --seed 0",
+  "seed": 0,
+  "world_digest": "9b445105a9c9cac9",
+  "python": "3.12.3",
+  "numpy": "2.5.1",
+  "peak_rss_mb": 41.28515625,
+  "results": [
+    {
+      "name": "control-oracle",
+      "T1_recall_known": 1.0,
+      "T1_recall_paraphrase": 1.0,
+      "T2_recall_curve": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "T2_forgetting": 0.0,
+      "T3_auroc": 1.0,
+      "T3_selective_acc_50": 0.8,
+      "T3_selective_acc_80": 0.5,
+      "T3_aurc": 0.23388339613962786,
+      "T5_ms_per_tell": 0.000186147995793832,
+      "T5_ms_per_ask": 0.0002400769638673713,
+      "per_stratum": {
+        "i_known": {
+          "n": 300,
+          "accuracy": 1.0,
+          "mean_conf": 1.0
+        },
+        "ii_near_miss": {
+          "n": 300,
+          "accuracy": 0.0,
+          "mean_conf": 0.0
+        },
+        "ii_far_miss": {
+          "n": 300,
+          "accuracy": 0.0,
+          "mean_conf": 0.0
+        },
+        "iii_unseen_subject": {
+          "n": 150,
+          "accuracy": 0.0,
+          "mean_conf": 0.0
+        },
+        "iv_paraphrase": {
+          "n": 300,
+          "accuracy": 1.0,
+          "mean_conf": 1.0
+        }
+      },
+      "key": "oracle"
+    },
+    {
+      "name": "control-coinflip",
+      "T1_recall_known": 1.0,
+      "T1_recall_paraphrase": 1.0,
+      "T2_recall_curve": [
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "T2_forgetting": 0.0,
+      "T3_auroc": 0.5030888888888889,
+      "T3_selective_acc_50": 0.4053333333333333,
+      "T3_selective_acc_80": 0.3933333333333333,
+      "T3_aurc": 0.5913067943154192,
+      "T5_ms_per_tell": 0.00018539970460433594,
+      "T5_ms_per_ask": 0.0003946777993675183,
+      "per_stratum": {
+        "i_known": {
+          "n": 300,
+          "accuracy": 1.0,
+          "mean_conf": 0.4927558177570892
+        },
+        "ii_near_miss": {
+          "n": 300,
+          "accuracy": 0.0,
+          "mean_conf": 0.4775021915292633
+        },
+        "ii_far_miss": {
+          "n": 300,
+          "accuracy": 0.0,
+          "mean_conf": 0.5098609108500972
+        },
+        "iii_unseen_subject": {
+          "n": 150,
+          "accuracy": 0.0,
+          "mean_conf": 0.5156093658246355
+        },
+        "iv_paraphrase": {
+          "n": 300,
+          "accuracy": 1.0,
+          "mean_conf": 0.5122765408825221
+        }
+      },
+      "key": "coinflip"
+    },
+    {
+      "name": "opponent-lexical-cosine",
+      "T1_recall_known": 0.52,
+      "T1_recall_paraphrase": 0.5333333333333333,
+      "T2_recall_curve": [
+        0.691358024691358,
+        0.6172839506172839,
+        0.5802469135802469,
+        0.5555555555555556
+      ],
+      "T2_forgetting": 0.1358024691358024,
+      "T3_auroc": 0.7072973322973323,
+      "T3_selective_acc_50": 0.29600000000000004,
+      "T3_selective_acc_80": 0.2416666666666667,
+      "T3_aurc": 0.6476755938728714,
+      "T5_ms_per_tell": 0.009056666836350306,
+      "T5_ms_per_ask": 6.141959198446582,
+      "per_stratum": {
+        "i_known": {
+          "n": 300,
+          "accuracy": 0.52,
+          "mean_conf": 0.49641266382101074
+        },
+        "ii_near_miss": {
+          "n": 300,
+          "accuracy": 0.0,
+          "mean_conf": 0.45549437690699174
+        },
+        "ii_far_miss": {
+          "n": 300,
+          "accuracy": 0.0,
+          "mean_conf": 0.4441209272808849
+        },
+        "iii_unseen_subject": {
+          "n": 150,
+          "accuracy": 0.0,
+          "mean_conf": 0.41879534287985065
+        },
+        "iv_paraphrase": {
+          "n": 300,
+          "accuracy": 0.5333333333333333,
+          "mean_conf": 0.45336487684242627
+        }
+      },
+      "key": "lexical"
+    }
+  ]
+}

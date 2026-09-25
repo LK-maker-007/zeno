@@ -106,7 +106,7 @@ def run(a: argparse.Namespace) -> Path:
     path.write_text(
         json.dumps(
             {
-                "command": " ".join(sys.argv),
+                "command": " ".join(["python -m scoreboard.read_race", *sys.argv[1:]]),
                 "seed": a.seed,
                 "digest": digest(data),
                 "python": platform.python_version(),
