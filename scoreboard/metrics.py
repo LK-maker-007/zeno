@@ -60,19 +60,34 @@ def cluster_bootstrap_diff(stat, a, b, clusters, n_boot: int = 2000, seed: int =
         d = stat(sa[idx], ya[idx]) - stat(sb[idx], yb[idx])
         if not np.isnan(d):
             diffs.append(d)
+    if not diffs:
+        return float(point), float("nan"), float("nan")
     lo, hi = np.percentile(diffs, [2.5, 97.5])
     return float(point), float(lo), float(hi)
 
 
-def selective_accuracy(scores, labels, coverage: float) -> float:
+def _expected_errors(scores, labels) -> np.ndarray:
     s, y = np.asarray(scores, float), np.asarray(labels, bool)
-    k = max(1, round(coverage * len(s)))
-    keep = np.argsort(-s, kind="mergesort")[:k]
-    return float(y[keep].mean())
+    order = np.argsort(-s, kind="mergesort")
+    ss, err = s[order], (~y[order]).astype(float)
+    # Order inside a tie group is arbitrary, so each position carries the group's mean error:
+    # the expected value over all orderings, instead of whatever order the probes arrived in.
+    i = 0
+    while i < len(ss):
+        j = i
+        while j < len(ss) and ss[j] == ss[i]:
+            j += 1
+        err[i:j] = err[i:j].mean()
+        i = j
+    return err
+
+
+def selective_accuracy(scores, labels, coverage: float) -> float:
+    err = _expected_errors(scores, labels)
+    k = max(1, round(coverage * len(err)))
+    return float(1.0 - err[:k].mean())
 
 
 def aurc(scores, labels) -> float:
-    s, y = np.asarray(scores, float), np.asarray(labels, bool)
-    order = np.argsort(-s, kind="mergesort")
-    risk = np.cumsum(~y[order]) / np.arange(1, len(s) + 1)
-    return float(risk.mean())
+    err = _expected_errors(scores, labels)
+    return float((np.cumsum(err) / np.arange(1, len(err) + 1)).mean())

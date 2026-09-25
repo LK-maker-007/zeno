@@ -52,9 +52,20 @@ class TestMetrics(unittest.TestCase):
     def test_selective_accuracy_and_aurc_by_hand(self):
         s = [0.9, 0.8, 0.7, 0.1]
         y = [True, False, True, False]
-        self.assertEqual(selective_accuracy(s, y, 0.5), 0.5)
-        self.assertEqual(selective_accuracy(s, y, 0.75), 2 / 3)
+        self.assertAlmostEqual(selective_accuracy(s, y, 0.5), 0.5)
+        self.assertAlmostEqual(selective_accuracy(s, y, 0.75), 2 / 3)
         self.assertAlmostEqual(aurc(s, y), np.mean([0 / 1, 1 / 2, 1 / 3, 2 / 4]))
+
+    def test_constant_confidence_earns_only_the_base_rate(self):
+        y = [True] * 30 + [False] * 70
+        s = [0.5] * 100
+        self.assertAlmostEqual(selective_accuracy(s, y, 0.5), 0.3)
+        self.assertAlmostEqual(aurc(s, y), 0.7)
+        self.assertAlmostEqual(aurc(s, y), aurc(s, y[::-1]))
+
+    def test_cluster_bootstrap_returns_nan_bounds_when_no_resample_is_defined(self):
+        d, lo, hi = cluster_bootstrap_diff(auroc, ([0.1, 0.2], [True, True]), ([0.3, 0.4], [True, True]), [0, 1])
+        self.assertTrue(np.isnan(d) and np.isnan(lo) and np.isnan(hi))
 
     def test_cluster_bootstrap_zero_for_identical_inputs(self):
         rng = np.random.default_rng(3)
