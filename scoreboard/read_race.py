@@ -17,7 +17,8 @@ from scoreboard.regex_reader import RegexReader
 from scoreboard.world import normalize
 
 ROOT = Path(__file__).resolve().parent.parent
-TEST_WORLDS = range(800, 805)
+# Smoke runs and development score on the validation worlds; the test worlds are kept for the pre-registered race.
+WORLDS = {"test": range(800, 805), "val": range(900, 905)}
 
 
 class Reader(Protocol):
@@ -28,7 +29,7 @@ class Reader(Protocol):
 
 class ChildMindReader:
     # Adapter: the C1 byte model reads the same facts and question through its own prompt format.
-    def __init__(self, ckpt: Path, threads: int = 2):
+    def __init__(self, ckpt: Path, threads: int = 2, device: str = "cpu"):
         import torch
 
         from childmind.data import prompt
@@ -36,8 +37,8 @@ class ChildMindReader:
         from childmind.model import ChildMind, Config
 
         torch.set_num_threads(threads)
-        state = torch.load(ckpt, map_location="cpu")
-        self.model = ChildMind(Config(**state["config"]))
+        state = torch.load(ckpt, map_location=device)
+        self.model = ChildMind(Config(**state["config"])).to(device)
         self.model.load_state_dict(state["model"])
         self.model.eval()
         self._prompt, self._answer = prompt, answer
@@ -45,6 +46,29 @@ class ChildMindReader:
 
     def read(self, facts: tuple[str, ...], question: str) -> tuple[str, float]:
         return self._answer(self.model, self._prompt(list(facts), question))
+
+
+class MindReader:
+    # Adapter: the A1 fast-weight reader writes the facts into memory, then reads the question, one example at a time.
+    def __init__(self, ckpt: Path, threads: int = 2, device: str = "cpu"):
+        import torch
+
+        from mind.data import collate
+        from mind.model import Config, FastWeightReader, decode
+
+        torch.set_num_threads(threads)
+        state = torch.load(ckpt, map_location=device)
+        self.model = FastWeightReader(Config(**state["config"])).to(device)
+        self.model.load_state_dict(state["model"])
+        self.model.eval()
+        self._no_grad, self._collate, self._decode, self._device = torch.no_grad, collate, decode, device
+        self.name = f"A1-fast-weight ({ckpt.parent.parent.name})"
+
+    def read(self, facts: tuple[str, ...], question: str) -> tuple[str, float]:
+        # The answer field is a placeholder: collate only uses it to build training targets.
+        b = self._collate([Example(facts, question, UNKNOWN, "", "")], self._device)
+        with self._no_grad():
+            return self._decode(self.model(b), b["facts"])[0]
 
 
 def score(reader: Reader, data: list[Example]) -> dict:
@@ -85,17 +109,19 @@ def report(results: list[dict]) -> None:
 
 
 def run(a: argparse.Namespace) -> Path:
-    data = build(TEST_WORLDS, a.n, CATEGORIES, seed=a.seed)
+    worlds = WORLDS[a.worlds]
+    data = build(worlds, a.n, CATEGORIES, seed=a.seed)
     print(
-        f"test worlds {TEST_WORLDS.start}-{TEST_WORLDS.stop - 1}  {a.n} per category  n={len(data)}  "
-        f"digest {digest(data)}  seed {a.seed}",
+        f"{a.worlds} worlds {worlds.start}-{worlds.stop - 1}  {a.n} per category  n={len(data)}  "
+        f"digest {digest(data)}  seed {a.seed}  device {a.device}",
         flush=True,
     )
     for c in CATEGORIES:
         e = next(x for x in data if x.category == c)
         print(f"--- {c}\n" + "\n".join(f"  <f> {f}" for f in e.facts) + f"\n  <q> {e.question}\n  gold: {e.answer}")
     readers: list[Reader] = [RegexReader(all_templates=False), RegexReader(all_templates=True)]
-    readers += [ChildMindReader(p) for p in a.childmind]
+    readers += [ChildMindReader(p, a.threads, a.device) for p in a.childmind]
+    readers += [MindReader(p, a.threads, a.device) for p in a.mind]
     results = []
     for r in readers:
         print(f"racing {r.name}", flush=True)
@@ -108,6 +134,8 @@ def run(a: argparse.Namespace) -> Path:
             {
                 "command": " ".join(["python -m scoreboard.read_race", *sys.argv[1:]]),
                 "seed": a.seed,
+                "worlds": a.worlds,
+                "device": a.device,
                 "digest": digest(data),
                 "python": platform.python_version(),
                 "results": results,
@@ -121,8 +149,12 @@ def run(a: argparse.Namespace) -> Path:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--n", type=int, default=100, help="examples per category per test world (5 test worlds)")
+    ap.add_argument("--n", type=int, default=100, help="examples per category per world (5 worlds)")
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--worlds", choices=sorted(WORLDS), default="test")
     ap.add_argument("--childmind", type=Path, nargs="*", default=[])
+    ap.add_argument("--mind", type=Path, nargs="*", default=[], help="A1 fast-weight reader checkpoints")
+    ap.add_argument("--device", default="cpu", help="ms per read is only comparable across runs on the same device")
+    ap.add_argument("--threads", type=int, default=2)
     ap.add_argument("--out", type=Path, default=ROOT / "results")
     run(ap.parse_args())
