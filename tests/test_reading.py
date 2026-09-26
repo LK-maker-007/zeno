@@ -43,6 +43,24 @@ class TestReading(unittest.TestCase):
             self.assertEqual(len(floor._records(e.facts)), len(e.facts), e.facts)
             self.assertTrue(any(pat.match(e.question) for _, pat in floor.questions), e.question)
 
+    def test_auroc_counts_only_correct_real_answers_as_positive(self):
+        from scoreboard.read_race import score
+
+        # Knows every wording: right everywhere and confident only in real answers, so AUROC must be exactly 1.
+        m = score(RegexReader(all_templates=True), self.data)["categories"]["ALL"]
+        self.assertEqual((m["acc"], m["auroc"]), (1.0, 1.0))
+
+        class Abstainer:
+            name = "always-unknown"
+
+            def read(self, facts, question):
+                return UNKNOWN, 0.0
+
+        # Right on every unanswerable question, yet it holds no real answer, so AUROC has no positives.
+        m = score(Abstainer(), self.data)["categories"]["ALL"]
+        self.assertAlmostEqual(m["acc"], sum(e.answer == UNKNOWN for e in self.data) / len(self.data))
+        self.assertTrue(m["auroc"] != m["auroc"])
+
     def test_heldout_categories_use_heldout_wording(self):
         floor = RegexReader(all_templates=False)
         for e in self.data:

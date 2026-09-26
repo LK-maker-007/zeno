@@ -75,7 +75,10 @@ def score(reader: Reader, data: list[Example]) -> dict:
     rows, t0 = [], time.perf_counter()
     for e in tqdm(data, desc=f"  {reader.name}", leave=False):
         got, conf = reader.read(e.facts, e.question)
-        rows.append((e.category, e.answer == UNKNOWN, normalize(got) == normalize(e.answer), conf))
+        ok = normalize(got) == normalize(e.answer)
+        # AUROC label: "holds a correct real answer", as in the memory scoreboard. Confidence means "I hold a real
+        # answer" for every entrant, so a correct "unknown" is a correctly low score, not a confident error.
+        rows.append((e.category, e.answer == UNKNOWN, ok, conf, ok and e.answer != UNKNOWN))
     ms = 1000 * (time.perf_counter() - t0) / len(data)
     out = {"name": reader.name, "ms_per_read": ms, "categories": {}}
     for c in [*CATEGORIES, "ALL"]:
@@ -87,9 +90,18 @@ def score(reader: Reader, data: list[Example]) -> dict:
             "acc": float(np.mean([r[2] for r in sel])),
             "em_answerable": float(np.mean([r[2] for r in ans])) if ans else float("nan"),
             "acc_unknown": float(np.mean([r[2] for r in unk])) if unk else float("nan"),
-            "auroc": auroc([r[3] for r in sel], [r[2] for r in sel]),
+            "auroc": auroc([r[3] for r in sel], [r[4] for r in sel]),
         }
     return out
+
+
+def self_check(result: dict) -> None:
+    # The reader that knows every wording answers everything correctly and is sure only of real answers,
+    # so anything below 1.000 means the scorer, not a mind, is broken.
+    m = result["categories"]["ALL"]
+    if m["acc"] != 1.0 or m["auroc"] != 1.0:
+        sys.exit(f"self-check FAILED: {result['name']} accuracy {m['acc']:.3f}, AUROC {m['auroc']:.3f}; must be 1")
+    print(f"self-check ok: {result['name']} accuracy 1.000, AUROC 1.000", flush=True)
 
 
 def report(results: list[dict]) -> None:
@@ -119,13 +131,16 @@ def run(a: argparse.Namespace) -> Path:
     for c in CATEGORIES:
         e = next(x for x in data if x.category == c)
         print(f"--- {c}\n" + "\n".join(f"  <f> {f}" for f in e.facts) + f"\n  <q> {e.question}\n  gold: {e.answer}")
-    readers: list[Reader] = [RegexReader(all_templates=False), RegexReader(all_templates=True)]
+    check = RegexReader(all_templates=True)
+    readers: list[Reader] = [RegexReader(all_templates=False), check]
     readers += [ChildMindReader(p, a.threads, a.device) for p in a.childmind]
     readers += [MindReader(p, a.threads, a.device) for p in a.mind]
     results = []
     for r in readers:
         print(f"racing {r.name}", flush=True)
         results.append(score(r, data))
+        if r is check:
+            self_check(results[-1])
     report(results)
     a.out.mkdir(parents=True, exist_ok=True)
     path = a.out / f"read_seed{a.seed}_{digest(data)}_{int(time.time())}.json"
