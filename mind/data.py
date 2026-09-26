@@ -25,7 +25,8 @@ def _occurrences(fact: str, answer: str) -> list[tuple[int, int]]:
 
 
 def collate(batch: list[Example], device: str) -> dict[str, torch.Tensor]:
-    b, n_facts = len(batch), max(len(e.facts) for e in batch)
+    # At least one (masked) fact slot: a batch whose every context is empty would otherwise give the encoder zero rows.
+    b, n_facts = len(batch), max(1, *(len(e.facts) for e in batch))
     flat = [f for e in batch for f in e.facts]
     fx, _ = pad_bytes(flat)
     facts = torch.zeros(b, n_facts, fx.shape[1], dtype=torch.long)
