@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -17,6 +18,8 @@ WORK = Path("/kaggle/working")
 SRC = WORK / "src"
 # tqdm redraws many times a second. Each job's full stream goes to its log file; the console shows one bar a minute.
 BAR_EVERY_S = 60
+# A bar ends with its closing bracket; an eval line printed right after a bar shares its line and must still show.
+BAR = re.compile(r"(it/s|s/it)[^\]]*\]\s*$")
 
 found = sorted(Path("/kaggle/input").rglob("COMMIT"))
 print(f"code found: {[str(p) for p in found]}", flush=True)
@@ -49,7 +52,7 @@ def stream(name: str, proc: subprocess.Popen, log) -> None:
         # A finished nested bar clears itself with cursor-up codes, which arrive here as empty lines.
         if not line.replace("\x1b[A", "").strip():
             continue
-        bar = "it/s]" in line or "s/it]" in line
+        bar = bool(BAR.search(line))
         if bar and time.monotonic() - last_bar < BAR_EVERY_S:
             continue
         if bar:
