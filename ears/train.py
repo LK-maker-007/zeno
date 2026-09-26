@@ -53,7 +53,7 @@ def transcribe(model: QuartzNet, data: list, device: str, bs: int) -> list[str]:
     model.eval()
     hyps: list[str] = [""] * len(data)
     order = sorted(range(len(data)), key=lambda i: data[i][0].shape[1])
-    for k in tqdm(range(0, len(order), bs), desc="  transcribe", mininterval=60, leave=False):
+    for k in tqdm(range(0, len(order), bs), desc="  transcribe", mininterval=1, leave=False):
         idx = order[k : k + bs]
         x, xl, _, _ = pad([data[i] for i in idx], device)
         with torch.autocast(device, dtype=torch.float16, enabled=device == "cuda"):
@@ -90,7 +90,15 @@ def run(a: argparse.Namespace) -> None:
         flush=True,
     )
     root = Path(a.root)
-    if a.overfit:
+    saved = None
+    if a.features:
+        t0 = time.time()
+        saved = torch.load(a.features)
+        train_utts, sets = [Utt(Path(p), t, s, u) for p, t, s, u in saved["train"]["utts"]], {}
+        for name in ("dev", "test"):
+            sets[name] = [Utt(Path(p), t, s, u) for p, t, s, u in saved[name]["utts"]]
+        print(f"features loaded from {a.features} in {time.time() - t0:.0f} s", flush=True)
+    elif a.overfit:
         train_utts = index(root, [a.train[0]])[: a.overfit]
         sets = {"dev": train_utts}
     else:
@@ -109,8 +117,11 @@ def run(a: argparse.Namespace) -> None:
     if not train_utts or not all(sets.values()):
         raise SystemExit(f"an empty split under {root}: the mirror lacks a requested subset")
     t0 = time.time()
-    train = cache(train_utts, a.workers, "features train")
-    data = {name: cache(utts, a.workers, f"features {name}") for name, utts in sets.items()}
+    if saved is not None:
+        train, data = saved["train"]["data"], {name: saved[name]["data"] for name in sets}
+    else:
+        train = cache(train_utts, a.workers, "features train")
+        data = {name: cache(utts, a.workers, f"features {name}") for name, utts in sets.items()}
     print(f"features in {time.time() - t0:.0f} s", flush=True)
     splits = {"train": describe("train", train, train_utts)}
     splits |= {name: describe(name, d, sets[name]) for name, d in data.items()}
@@ -148,8 +159,7 @@ def run(a: argparse.Namespace) -> None:
     step, t_start = 0, time.time()
     for epoch in range(1, a.epochs + 1):
         t_epoch, losses = time.time(), []
-        bar = tqdm(batches(lengths, a.batch, rng), desc=f"epoch {epoch}", mininterval=60)
-        for b in bar:
+        for i, b in enumerate(batches(lengths, a.batch, rng), 1):
             x, xl, y, yl = pad([train[i] for i in b], device)
             if not a.overfit:
                 mask(x, xl, gen)
@@ -166,7 +176,13 @@ def run(a: argparse.Namespace) -> None:
             sched.step()
             step += 1
             losses.append(loss.item())
-            bar.set_postfix(loss=f"{losses[-1]:.4f}", lr=f"{sched.get_last_lr()[0]:.2e}", refresh=False)
+            per_step = (time.time() - t_start) / step
+            print(
+                f"epoch {epoch}/{a.epochs} batch {i}/{per_epoch} step {step}/{total} loss {losses[-1]:.4f} "
+                f"lr {sched.get_last_lr()[0]:.2e} {per_step:.3f} s/step, "
+                f"{(total - step) * per_step / 3600:.2f} h left",
+                flush=True,
+            )
         elapsed = time.time() - t_start
         last = epoch == a.epochs or elapsed / 3600 + (time.time() - t_epoch) / 3600 > a.max_hours
         m = {
@@ -200,7 +216,8 @@ def run(a: argparse.Namespace) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--root", required=True, help="a LibriSpeech mirror; every *.trans.txt under it is indexed")
+    ap.add_argument("--root", required=True, help="a LibriSpeech mirror")
+    ap.add_argument("--features", help="features saved by ears.prepare, instead of decoding the audio here")
     ap.add_argument("--train", nargs="+", default=["train-clean-100"])
     ap.add_argument("--dev", default="dev-clean")
     ap.add_argument("--test", default="test-clean")

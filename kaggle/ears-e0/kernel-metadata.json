@@ -1,15 +1,18 @@
 {
   "id": "singarajb/ava-ears-e0",
   "title": "ava-ears-e0",
-  "code_file": "run_e0.py",
+  "code_file": "ava-ears-e0.ipynb",
   "language": "python",
-  "kernel_type": "script",
+  "kernel_type": "notebook",
   "is_private": true,
   "enable_gpu": true,
   "enable_tpu": false,
   "enable_internet": false,
   "keywords": [],
-  "dataset_sources": ["singarajb/ava-zeno-code", "victorling/librispeech-clean"],
+  "dataset_sources": [
+    "singarajb/ava-zeno-code",
+    "victorling/librispeech-clean"
+  ],
   "kernel_sources": [],
   "competition_sources": [],
   "model_sources": [],
