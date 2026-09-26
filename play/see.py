@@ -44,7 +44,8 @@ def objects(frame: np.ndarray) -> list[Obj]:
     return out
 
 
-def place(frame: np.ndarray) -> bytes:
-    # Identity of a situation. The top and bottom rows are left out: on the practice games a step counter
-    # ticks there on nearly every action, which would make every revisit look like a new place.
-    return frame[1:-1].tobytes()
+def place(frame: np.ndarray, ignore: set[int] | None = None) -> bytes:
+    # Identity of a situation, leaving out rows that tick regardless of what she does. By default the top and
+    # bottom rows: on the practice games a step counter ticks there, which would make every revisit look new.
+    rows = {0, frame.shape[0] - 1} if ignore is None else ignore
+    return np.delete(frame, sorted(rows), axis=0).tobytes()

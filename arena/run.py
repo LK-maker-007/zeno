@@ -17,7 +17,7 @@ from arcengine.enums import GameAction, GameState
 
 from arena.games import GAMES_DIR, ROOT, Game, load_games, split
 from arena.score import budget, game_score
-from play.ava import Ava
+from play.ava import Ava, Explorer
 
 
 @dataclass
@@ -53,7 +53,7 @@ class RandomAgent:
         return action, None
 
 
-AGENTS = {"random": RandomAgent, "ava": Ava}
+AGENTS = {"random": RandomAgent, "ava-p0": Explorer, "ava": Ava}
 
 
 def _obs(f: Any) -> Obs:
