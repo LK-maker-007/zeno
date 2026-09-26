@@ -246,7 +246,7 @@ Ears, voice, turn-taking (I2), eyes (I3, I4), world model and body. Each one: de
 | A1 design round | α, β, γ reviewed: none new as an architecture; a narrow opening remains (gated fast-weight reader with residual "unknown"). See `a1-designs.md`. |
 | Scoreboard v2 (reading race) | Built, in CI (`scoreboard/reading.py`, `scoreboard/read_race.py`); labels checked against a reader that knows every wording |
 | A1 candidate 1 (fast-weight memory reader) | Built and tested (`mind/`); pass/fail pre-registered; not trained |
-| Race C1-v2 vs A1 | Next: seed-0 smoke runs on Kaggle, then 5 seeds each |
+| Race C1-v2 vs A1 | Seed-0 smoke run done on the validation worlds; one seed, so not a result (`results/a1-race-smoke/`: Kaggle `singarajb/ava-a1-race` v1 from commit `c26be44`, whose output holds the checkpoints; re-scored on CPU at `4341d45` after the AUROC label fix). A1 against C1-v2: answerable EM 0.370 vs 0.442, held-out answerable EM 0.034 vs 0.078 (mean of three), honesty AUROC 0.951 vs 0.985, CPU 36 vs 214 ms per read (C1 without a KV cache). Next: 5 seeds on the test worlds |
 | C1 KV cache | Open issue, needed before any CPU-cost comparison |
 | B0 hardware measurement | Not run |
 

@@ -1,0 +1,22 @@
+{
+  "model": {
+    "emb": 128,
+    "hidden": 400,
+    "layers": 2,
+    "key": 128,
+    "hops": 2
+  },
+  "args": {
+    "steps": 6000,
+    "batch": 64,
+    "lr": 0.001,
+    "hidden": 400,
+    "train_worlds": 200,
+    "per_category": 143,
+    "val_per_category": 40,
+    "eval_every": 1000,
+    "threads": 2,
+    "seed": 0,
+    "out": "/kaggle/working/a1-s0/mind"
+  }
+}
