@@ -16,13 +16,15 @@ dependencies = ["numpy>=1.26", "tqdm>=4.66"]
 model = ["torch>=2.2"]
 # The ARC-AGI-3 engine requires Python 3.12, so it stays optional.
 arc = ["arc-agi>=0.9.9"]
+# FLAC decoding for the ears; the unit tests do not need it.
+ears = ["soundfile>=0.12"]
 dev = ["pytest>=8", "ruff==0.16.9"]
 
 [project.urls]
 Repository = "https://github.com/LK-maker-007/zeno"
 
 [tool.setuptools]
-packages = ["scoreboard", "childmind", "mind", "arena"]
+packages = ["scoreboard", "childmind", "mind", "arena", "ears"]
 
 [tool.ruff]
 line-length = 119
@@ -32,7 +34,7 @@ target-version = "py310"
 select = ["E", "F", "I", "W", "UP", "B", "SIM", "C4", "RUF", "NPY", "PERF"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["scoreboard", "childmind", "mind", "arena"]
+known-first-party = ["scoreboard", "childmind", "mind", "arena", "ears"]
 required-imports = ["from __future__ import annotations"]
 
 [tool.pytest.ini_options]
