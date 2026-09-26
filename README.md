@@ -115,8 +115,11 @@ levels completed, with a budget of five times the human action count per level. 
 before any agent existed, and are scored once per frozen agent version.
 
 ```bash
-pip install -e .[arc]      # Python 3.12; downloads the public games on first run
+pip install -e .[arc]      # Python 3.12
+# The 25 public games come from the Kaggle bundle arc-prize-2026-arc-agi-3: unzip it and copy its
+# environment_files/ to data/arc/environment_files/. Without them the arena finds 0 games.
 python -m arena.run --agent random --split practice --seed 0
+python -m arena.run --agent ava --split practice --seed 0
 ```
 
 The random floor scores 0.02%, 0.00% and 0.42% on the practice games for seeds 0 to 2.
