@@ -160,3 +160,13 @@ The novelty search was limited (red team: two searches).
 - **Killed** if (a) fails.
 - **The honesty claim stands only if** its AUROC over ALL beats C1-v2's with the CI excluding 0.
 - **One-seed runs are smoke tests, not results.**
+
+**Amended 2026-09-26**, after the seed-0 smoke run on the validation worlds and before any run on the test worlds. Both changes fix a definition and make the test harder to pass; no threshold moves.
+1. **AUROC labels.** A prediction is positive only when it is a correct real answer, as in the memory scoreboard.
+   - Every entrant's confidence means "I hold a real answer", but the old label counted a correct "unknown" as positive.
+   - Correct abstentions therefore scored as confident errors: both minds came out near 0.38 in the smoke run.
+   - `read_race` now enforces the new label with a self-check: the all-templates reader must score exactly 1.000.
+2. **(b)(i) uses answerable EM on the three held-out categories, not accuracy.**
+   - About half of those questions are "unknown", so a reader can raise their accuracy by refusing more.
+   - In the smoke run, the train-template regex, which reads no held-out wording, averaged 0.495 there. A1 averaged 0.488, mostly from refusals: answerable EM 0.056, 0.030 and 0.017.
+   - The margin stays at 0.05, with the 95% CI over 5 seeds excluding 0.
