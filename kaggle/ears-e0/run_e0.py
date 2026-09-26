@@ -34,7 +34,8 @@ code, mirror = mounted("ava-zeno-code"), mounted("librispeech-clean")
 print(f"code {[str(p) for p in code]}  mirror {[str(p) for p in mirror]}", flush=True)
 if len(code) != 1 or len(mirror) != 1:
     sys.exit(f"expected one code and one mirror folder; inputs: {sorted(str(p) for p in INPUT.glob('*/*/*'))}")
-print(f"commit {(code[0] / 'COMMIT').read_text().strip()}", flush=True)
+COMMIT = (code[0] / "COMMIT").read_text().strip()
+print(f"commit {COMMIT}", flush=True)
 shutil.copytree(code[0] / "ears", SRC / "ears", dirs_exist_ok=True)
 MIRROR = mirror[0]
 subprocess.run(["nvidia-smi"], check=False)
@@ -75,7 +76,7 @@ def launch(name: str, args: list[str], gpu: int) -> tuple[subprocess.Popen, thre
     cmd = [sys.executable, "-u", "-m", *args, "--out", str(WORK / name / "ears")]
     print(f"[{name}] gpu {gpu}: {' '.join(cmd)}", flush=True)
     log = (WORK / f"{name}.log").open("w")
-    env = os.environ | {"CUDA_VISIBLE_DEVICES": str(gpu)}
+    env = os.environ | {"CUDA_VISIBLE_DEVICES": str(gpu), "ZENO_COMMIT": COMMIT}
     p = subprocess.Popen(cmd, cwd=SRC, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, text=True, bufsize=1)
     t = threading.Thread(target=stream, args=(name, p, log))
     t.start()

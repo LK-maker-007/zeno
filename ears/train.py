@@ -1,10 +1,14 @@
 from __future__ import annotations
 
 import argparse
+import collections
 import json
 import math
+import os
 import platform
 import random
+import statistics
+import sys
 import time
 from dataclasses import asdict
 from pathlib import Path
@@ -25,8 +29,23 @@ def default_out() -> Path:
     return kaggle / "ears" if kaggle.exists() else Path(__file__).resolve().parent.parent / "runs" / "ears"
 
 
-def hours(data: list[tuple[torch.Tensor, torch.Tensor]]) -> float:
-    return sum(f.shape[1] for f, _ in data) * HOP / SAMPLE_RATE / 3600
+def describe(name: str, data: list[tuple[torch.Tensor, torch.Tensor]], utts: list[Utt]) -> dict:
+    secs = sorted(f.shape[1] * HOP / SAMPLE_RATE for f, _ in data)
+    labels = sorted(len(y) for _, y in data)
+    stats = {
+        "utterances": len(data),
+        "speakers": len({u.speaker for u in utts}),
+        "hours": sum(secs) / 3600,
+        "seconds_min_median_max": [secs[0], statistics.median(secs), secs[-1]],
+        "labels_min_median_max": [labels[0], statistics.median(labels), labels[-1]],
+    }
+    print(
+        f"{name}: {stats['utterances']} utterances, {stats['speakers']} speakers, {stats['hours']:.2f} h; seconds "
+        f"min {secs[0]:.1f} median {statistics.median(secs):.1f} max {secs[-1]:.1f}; labels min {labels[0]} "
+        f"median {statistics.median(labels):.0f} max {labels[-1]}",
+        flush=True,
+    )
+    return stats
 
 
 @torch.no_grad()
@@ -34,7 +53,7 @@ def transcribe(model: QuartzNet, data: list, device: str, bs: int) -> list[str]:
     model.eval()
     hyps: list[str] = [""] * len(data)
     order = sorted(range(len(data)), key=lambda i: data[i][0].shape[1])
-    for k in range(0, len(order), bs):
+    for k in tqdm(range(0, len(order), bs), desc="  transcribe", mininterval=60, leave=False):
         idx = order[k : k + bs]
         x, xl, _, _ = pad([data[i] for i in idx], device)
         with torch.autocast(device, dtype=torch.float16, enabled=device == "cuda"):
@@ -92,11 +111,17 @@ def run(a: argparse.Namespace) -> None:
     t0 = time.time()
     train = cache(train_utts, a.workers, "features train")
     data = {name: cache(utts, a.workers, f"features {name}") for name, utts in sets.items()}
-    print(f"features in {time.time() - t0:.0f} s: train {hours(train):.2f} h", flush=True)
-    for name, d in data.items():
-        print(f"features: {name} {hours(d):.2f} h", flush=True)
+    print(f"features in {time.time() - t0:.0f} s", flush=True)
+    splits = {"train": describe("train", train, train_utts)}
+    splits |= {name: describe(name, d, sets[name]) for name, d in data.items()}
+    chars = collections.Counter("".join(u.text for u in train_utts))
+    total_chars = sum(chars.values())
+    print("train characters, share: " + "  ".join(f"{c!r} {n / total_chars:.3f}" for c, n in chars.most_common()))
     f0, y0 = train[0]
-    print(f"first utterance: features {tuple(f0.shape)} {f0.dtype}, {len(y0)} labels, text {train_utts[0].text!r}")
+    print(
+        f"first utterance: features {tuple(f0.shape)} {f0.dtype}, {len(y0)} labels, text {train_utts[0].text!r}",
+        flush=True,
+    )
     too_short = sum(math.ceil(f.shape[1] / 2) < len(y) for f, y in train)
     print(f"utterances with fewer output frames than labels (CTC cannot fit them): {too_short}", flush=True)
 
@@ -113,14 +138,18 @@ def run(a: argparse.Namespace) -> None:
     scaler = torch.amp.GradScaler("cuda", enabled=device == "cuda")
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
-    (out / "config.json").write_text(json.dumps({"model": asdict(c), "args": vars(a) | {"out": str(out)}}, indent=2))
+    record = {"command": " ".join(["python -m ears.train", *sys.argv[1:]]), "commit": os.environ.get("ZENO_COMMIT")}
+    record |= {"seed": a.seed, "splits": splits}
+    meta = {"model": asdict(c), "args": vars(a) | {"out": str(out)}}
+    (out / "config.json").write_text(json.dumps(record | meta, indent=2))
     log = (out / "metrics.jsonl").open("a")
     rng, gen = random.Random(a.seed), torch.Generator().manual_seed(a.seed)
     lengths = [f.shape[1] for f, _ in train]
     step, t_start = 0, time.time()
     for epoch in range(1, a.epochs + 1):
         t_epoch, losses = time.time(), []
-        for b in tqdm(batches(lengths, a.batch, rng), desc=f"epoch {epoch}", mininterval=60):
+        bar = tqdm(batches(lengths, a.batch, rng), desc=f"epoch {epoch}", mininterval=60)
+        for b in bar:
             x, xl, y, yl = pad([train[i] for i in b], device)
             if not a.overfit:
                 mask(x, xl, gen)
@@ -137,6 +166,7 @@ def run(a: argparse.Namespace) -> None:
             sched.step()
             step += 1
             losses.append(loss.item())
+            bar.set_postfix(loss=f"{losses[-1]:.4f}", lr=f"{sched.get_last_lr()[0]:.2e}", refresh=False)
         elapsed = time.time() - t_start
         last = epoch == a.epochs or elapsed / 3600 + (time.time() - t_epoch) / 3600 > a.max_hours
         m = {
@@ -150,9 +180,7 @@ def run(a: argparse.Namespace) -> None:
             print(f"projection: {a.epochs} epochs take {m['epoch_seconds'] * a.epochs / 3600:.1f} h", flush=True)
         if epoch % a.eval_every == 0 or last:
             m |= {f"dev_{k}": v for k, v in evaluate(model, data["dev"], sets["dev"], device, a.batch).items()}
-            torch.save(
-                {"model": model.state_dict(), "config": asdict(c), "epoch": epoch, "metrics": m}, out / "last.pt"
-            )
+        torch.save({"model": model.state_dict(), "config": asdict(c), "epoch": epoch, "metrics": m}, out / "last.pt")
         print("  ".join(f"{k} {v:.4f}" if isinstance(v, float) else f"{k} {v}" for k, v in m.items()), flush=True)
         log.write(json.dumps(m) + "\n")
         log.flush()
@@ -165,8 +193,8 @@ def run(a: argparse.Namespace) -> None:
     for name, r in final.items():
         print(f"\n{name}: WER {r['wer']:.4f} 95% CI {r['wer_ci95']} (speaker bootstrap)  CER {r['cer']:.4f}")
         for s in r["samples"]:
-            print(f"  ref: {s['ref']}\n  hyp: {s['hyp']}")
-    (out / "final.json").write_text(json.dumps(final, indent=2))
+            print(f"  ref: {s['ref']}\n  hyp: {s['hyp']}", flush=True)
+    (out / "final.json").write_text(json.dumps(record | {"epochs_done": epoch, "results": final}, indent=2))
     print(f"wrote {out / 'final.json'}", flush=True)
 
 
