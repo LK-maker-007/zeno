@@ -51,7 +51,7 @@ Ava is fully ours when every row reads **ours** in both columns.
 | Memory | **Ours** | **Ours** (Design D, `memory-designs.md`) | n/a | GRACE-style codebook, LMLM-style threshold, SMF, RAG text store, plain fine-tuning |
 | Memory's fact matcher (inside D) | **Ours** (trained from scratch, no pretrained cross-encoder) | Known (small Transformer) | Later | Pretrained cross-encoders (e.g. MiniLM) |
 | Turn-taking | not built | n/a | Invention I2 (`ava-blueprint.md` §5) | Silero VAD + Smart Turn v3 |
-| Ears (speech to text) | not built | n/a | Later | Moonshine v2 |
+| Ears (speech to text) | **Ours** (E0, `ears/`; first run pre-registered in `ears-e0.md`) | Known (QuartzNet-5x5, trained from scratch) | Later | Moonshine v2 |
 | Voice (text to speech) | not built | n/a | Later | Pocket TTS, Kokoro |
 | Eyes (face, expression) | not built | n/a | Inventions I3, I4 | YuNet, MediaPipe, SFace, OpenCV FER |
 | World model | not built | n/a | Stage 2 | DINO-WM, V-JEPA 2-AC (§12.3) |
