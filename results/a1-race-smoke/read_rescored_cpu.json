@@ -1,0 +1,314 @@
+{
+  "command": "python -m scoreboard.read_race --worlds val --n 100 --threads 4 --childmind runs/kaggle-out/a1-race/c1v2-s0/childmind/last.pt --mind runs/kaggle-out/a1-race/a1-s0/mind/last.pt --out runs/kaggle-out/a1-race/rescored",
+  "seed": 0,
+  "worlds": "val",
+  "device": "cpu",
+  "digest": "6c0ab4fe35820428",
+  "python": "3.12.3",
+  "results": [
+    {
+      "name": "floor-regex-train-templates",
+      "ms_per_read": 0.06035440555650792,
+      "categories": {
+        "simple": {
+          "n": 618,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": 1.0
+        },
+        "near_miss": {
+          "n": 495,
+          "acc": 1.0,
+          "em_answerable": NaN,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "same_name": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": 1.0
+        },
+        "update": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": NaN,
+          "auroc": NaN
+        },
+        "negation": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": NaN,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "two_hop": {
+          "n": 387,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": 1.0
+        },
+        "heldout_question": {
+          "n": 500,
+          "acc": 0.5,
+          "em_answerable": 0.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "heldout_fact": {
+          "n": 500,
+          "acc": 0.47,
+          "em_answerable": 0.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "heldout_both": {
+          "n": 500,
+          "acc": 0.516,
+          "em_answerable": 0.0,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "ALL": {
+          "n": 4500,
+          "acc": 0.8317777777777777,
+          "em_answerable": 0.5858862144420132,
+          "acc_unknown": 1.0,
+          "auroc": 1.0
+        }
+      }
+    },
+    {
+      "name": "floor-regex-all-templates",
+      "ms_per_read": 0.06302833933376759,
+      "categories": {
+        "simple": {
+          "n": 618,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": 1.0
+        },
+        "near_miss": {
+          "n": 495,
+          "acc": 1.0,
+          "em_answerable": NaN,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "same_name": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": 1.0
+        },
+        "update": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": NaN,
+          "auroc": NaN
+        },
+        "negation": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": NaN,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "two_hop": {
+          "n": 387,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": 1.0
+        },
+        "heldout_question": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": 1.0
+        },
+        "heldout_fact": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": 1.0
+        },
+        "heldout_both": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": 1.0
+        },
+        "ALL": {
+          "n": 4500,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": 1.0,
+          "auroc": 1.0
+        }
+      }
+    },
+    {
+      "name": "C1-transformer (c1v2-s0)",
+      "ms_per_read": 213.73749099555585,
+      "categories": {
+        "simple": {
+          "n": 618,
+          "acc": 0.6941747572815534,
+          "em_answerable": 0.4240506329113924,
+          "acc_unknown": 0.9768211920529801,
+          "auroc": 0.9812045146169976
+        },
+        "near_miss": {
+          "n": 495,
+          "acc": 0.9656565656565657,
+          "em_answerable": NaN,
+          "acc_unknown": 0.9656565656565657,
+          "auroc": NaN
+        },
+        "same_name": {
+          "n": 500,
+          "acc": 0.604,
+          "em_answerable": 0.32116788321167883,
+          "acc_unknown": 0.7107438016528925,
+          "auroc": 0.6524122807017544
+        },
+        "update": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": NaN,
+          "auroc": NaN
+        },
+        "negation": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": NaN,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "two_hop": {
+          "n": 387,
+          "acc": 0.7984496124031008,
+          "em_answerable": 0.6016949152542372,
+          "acc_unknown": 0.8847583643122676,
+          "auroc": 0.9558299162060974
+        },
+        "heldout_question": {
+          "n": 500,
+          "acc": 0.398,
+          "em_answerable": 0.16,
+          "acc_unknown": 0.636,
+          "auroc": 0.985108695652174
+        },
+        "heldout_fact": {
+          "n": 500,
+          "acc": 0.488,
+          "em_answerable": 0.052830188679245285,
+          "acc_unknown": 0.9787234042553191,
+          "auroc": 0.9897119341563786
+        },
+        "heldout_both": {
+          "n": 500,
+          "acc": 0.328,
+          "em_answerable": 0.02066115702479339,
+          "acc_unknown": 0.6162790697674418,
+          "auroc": 0.9826262626262626
+        },
+        "ALL": {
+          "n": 4500,
+          "acc": 0.6944444444444444,
+          "em_answerable": 0.4420131291028446,
+          "acc_unknown": 0.8671407185628742,
+          "auroc": 0.9845967465110541
+        }
+      }
+    },
+    {
+      "name": "A1-fast-weight (a1-s0)",
+      "ms_per_read": 36.38860109911184,
+      "categories": {
+        "simple": {
+          "n": 618,
+          "acc": 0.5485436893203883,
+          "em_answerable": 0.13924050632911392,
+          "acc_unknown": 0.9768211920529801,
+          "auroc": 0.822339246119734
+        },
+        "near_miss": {
+          "n": 495,
+          "acc": 0.9797979797979798,
+          "em_answerable": NaN,
+          "acc_unknown": 0.9797979797979798,
+          "auroc": NaN
+        },
+        "same_name": {
+          "n": 500,
+          "acc": 0.652,
+          "em_answerable": 0.3284671532846715,
+          "acc_unknown": 0.7741046831955923,
+          "auroc": 0.23272283272283273
+        },
+        "update": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": 1.0,
+          "acc_unknown": NaN,
+          "auroc": NaN
+        },
+        "negation": {
+          "n": 500,
+          "acc": 1.0,
+          "em_answerable": NaN,
+          "acc_unknown": 1.0,
+          "auroc": NaN
+        },
+        "two_hop": {
+          "n": 387,
+          "acc": 0.7855297157622739,
+          "em_answerable": 0.5169491525423728,
+          "acc_unknown": 0.9033457249070632,
+          "auroc": 0.8552247812531429
+        },
+        "heldout_question": {
+          "n": 500,
+          "acc": 0.516,
+          "em_answerable": 0.056,
+          "acc_unknown": 0.976,
+          "auroc": 0.8890358612580834
+        },
+        "heldout_fact": {
+          "n": 500,
+          "acc": 0.454,
+          "em_answerable": 0.03018867924528302,
+          "acc_unknown": 0.9319148936170213,
+          "auroc": 0.8742378048780488
+        },
+        "heldout_both": {
+          "n": 500,
+          "acc": 0.494,
+          "em_answerable": 0.01652892561983471,
+          "acc_unknown": 0.9418604651162791,
+          "auroc": 0.9737903225806451
+        },
+        "ALL": {
+          "n": 4500,
+          "acc": 0.708,
+          "em_answerable": 0.36980306345733044,
+          "acc_unknown": 0.9393712574850299,
+          "auroc": 0.951128500160927
+        }
+      }
+    }
+  ]
+}
