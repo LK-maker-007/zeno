@@ -9,7 +9,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATASET = "singarajb/ava-zeno-code"
-PATHS = ["scoreboard", "childmind", "mind", "arena", "pyproject.toml", "LICENSE"]
+PATHS = ["scoreboard", "childmind", "mind", "arena", "ears", "pyproject.toml", "LICENSE"]
 
 
 def git(*args: str) -> str:
