@@ -443,11 +443,11 @@ git clone https://github.com/top-quarks/ARC-solution.git icecuber           # co
 curl -sSL -o trm_ckpt/step_518071 "https://huggingface.co/arcprize/trm_arc_prize_verification/resolve/main/arc_v1_public/step_518071"
 ```
 
-Each timing below is one run over a short window (3 to 20 steps).
+Each timing below is one run over a short window (3 to 20 steps). The scripts are recorded exactly as they ran, so they are fenced as plain text and kept out of the formatter.
 
 **Matmul ceiling in that session** (`venv/bin/python - <<'EOF' ... EOF`):
 
-```python
+```text
 import time, torch
 for th in (4, 8):
     torch.set_num_threads(th)
@@ -477,7 +477,7 @@ threads=4 n=2048 bf16 matmul 40 GFLOPS
 
 **CompressARC step time**: `venv/bin/python time_compressarc_cpu.py evaluation 16 20 4`. The script is below.
 
-```python
+```text
 import json
 import sys
 import time
@@ -564,7 +564,7 @@ projected 2000 steps/task: mean 53.9 min; 400 tasks: 359 h
 
 **TRM checkpoint shapes** (`venv/bin/python - <<'EOF' ... EOF`):
 
-```python
+```text
 import torch
 sd = torch.load('trm_ckpt/step_518071', map_location='cpu', weights_only=False)
 print(type(sd), len(sd))
@@ -594,7 +594,7 @@ total params 455,549,954; puzzle_emb 448,719,872; trunk 6,830,082
 
 **TRM inference time**: `venv/bin/python time_trm_cpu.py 8`, with random inputs, fp32 and the checkpoint's own configuration.
 
-```python
+```text
 import sys, time
 import torch
 sys.path.insert(0, 'TinyRecursiveModels')
@@ -636,7 +636,7 @@ batch=8: 19.44 s per ACT step (15 network applications); full 16-step eval = 38.
 - AdamW with weight decay 0 stands in for the paper's Adam.
 - The script's "paper uses 2 runs" label is wrong: the 2 runs come from the repo's test-time training script, and the paper's ensemble used four.
 
-```python
+```text
 import sys, time
 import torch
 sys.path.insert(0, 'VARC/src'); sys.path.insert(0, 'VARC')
@@ -691,7 +691,7 @@ inference fwd 30 views=40.95s -> 510 views = 696.1s
 
 **StochasticGoose CNN**: `venv/bin/python time_goose_cpu.py`. `out.sum()` stands in for the repo's loss.
 
-```python
+```text
 import time
 import torch
 import torch.nn as nn
