@@ -11,16 +11,6 @@ from tqdm import tqdm
 from ears.features import SAMPLE_RATE, log_mel, mel_filterbank
 from ears.text import encode
 
-SUBSETS = [
-    "dev-clean",
-    "dev-other",
-    "test-clean",
-    "test-other",
-    "train-clean-100",
-    "train-clean-360",
-    "train-other-500",
-]
-
 
 @dataclass(frozen=True)
 class Utt:
@@ -31,14 +21,17 @@ class Utt:
 
 
 def index(root: Path, subsets: list[str]) -> list[Utt]:
+    # Mirrors nest a subset at different depths (LibriSpeech/<subset>/..., <subset>/LibriSpeech/<subset>/...).
+    # Globbing only those depths avoids walking every audio file: that walk took 21 minutes on Kaggle.
     out = []
-    for t in sorted(root.rglob("*.trans.txt")):
-        subset = next((p for p in t.parts if p in SUBSETS), None)
-        if subset not in subsets:
-            continue
-        for line in t.read_text().splitlines():
-            utt, text = line.split(" ", 1)
-            out.append(Utt(t.parent / f"{utt}.flac", text, utt.split("-")[0], subset))
+    for subset in subsets:
+        found: set[Path] = set()
+        for depth in ("", "*/", "*/*/"):
+            found.update(root.glob(f"{depth}{subset}/*/*/*.trans.txt"))
+        for t in sorted(found):
+            for line in t.read_text().splitlines():
+                utt, text = line.split(" ", 1)
+                out.append(Utt(t.parent / f"{utt}.flac", text, utt.split("-")[0], subset))
     return out
 
 
@@ -66,7 +59,7 @@ def _one_thread(_: int) -> None:
 def cache(utts: list[Utt], workers: int, desc: str) -> list[tuple[torch.Tensor, torch.Tensor]]:
     # Features for every utterance, held in RAM as fp16: 100 h of 64-bin frames is about 4.6 GB.
     loader = DataLoader(_Features(utts), batch_size=None, num_workers=workers, worker_init_fn=_one_thread)
-    return list(tqdm(loader, total=len(utts), desc=desc, mininterval=30))
+    return list(tqdm(loader, total=len(utts), desc=desc, mininterval=1))
 
 
 def batches(lengths: list[int], size: int, rng: random.Random) -> list[list[int]]:
